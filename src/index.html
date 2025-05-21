@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAI SSE Chat</title>
+</head>
+<body>
+  <h1>OpenAI SSE Chat</h1>
+  <form id="chat-form">
+    <input type="text" id="prompt" placeholder="Enter your prompt" required />
+    <button type="submit">Send</button>
+  </form>
+  <pre id="output"></pre>
+  <script>
+    document.getElementById('chat-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      const output = document.getElementById('output');
+      output.textContent = '';
+      const eventSource = new EventSource(`/openai/chat?prompt=${encodeURIComponent(prompt)}`);
+      eventSource.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          // OpenAI SSE chunk: data.choices[0].delta.content
+          if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
+            output.textContent += data.choices[0].delta.content;
+          }
+        } catch (e) {
+          // fallback: show raw data if not JSON
+          output.textContent += event.data + '\n';
+        }
+      };
+      eventSource.onerror = function() {
+        eventSource.close();
+      };
+    });
+  </script>
+</body>
+</html>

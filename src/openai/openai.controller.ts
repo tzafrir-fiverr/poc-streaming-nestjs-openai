@@ -1,6 +1,5 @@
-import { Controller, Query, Sse } from '@nestjs/common';
+import { Controller, Query, Sse, MessageEvent } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { MessageEvent } from '@nestjs/common';
 import { OpenAiService } from './openai.service';
 
 @Controller('openai')
